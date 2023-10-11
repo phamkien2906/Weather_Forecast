@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Current</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<body>
+<section class="vh-100">
+    <div class="container py-5 h-100">
+
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-md-8 col-lg-6 col-xl-4" th:object="${session.data}">
+
+                <h3 class="mb-4 pb-2 fw-normal">View the weather forecast</h3>
+                <form th:action="@{/view-weather}" method="get">
+                    <div class="input-group rounded mb-3">
+                        <input type="search" class="form-control rounded" placeholder="City"
+                               th:placeholder="|*{location.getName()}| + ','+|*{location.getCountry()}|"
+                               aria-label="Search"
+                               aria-describedby="search-addon" name="place"/> &nbsp;&nbsp;
+                        <button type="submit">
+                        <span class="input-group-text border-0 fw-bold" id="search-addon">
+                          Check!!
+                        </span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mb-4 pb-2">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <a th:href="@{/degree(value = 'Celsius')}" th:if="${value}=='Celsius'">
+                            <button type="button" class="btn btn-primary"> Celsius</button>
+                        </a>
+                        <a th:href="@{/degree(value = 'Celsius')}" th:if="${value}=='Farenheit'">
+                            <button type="button" class="btn btn-secondary"> Celsius</button>
+                        </a>
+                        <a th:href="@{/degree(value = 'Farenheit')}" th:if="${value}=='Farenheit'">
+                            <button type="button" class="btn btn-primary"> Farenheit</button>
+                        </a>
+                        <a th:href="@{/degree(value = 'Farenheit')}" th:if="${value}=='Celsius'">
+                            <button type="button" class="btn btn-secondary"> Farenheit</button>
+                        </a>
+                        &emsp; <a th:href="@{/report-weather}" >
+                            <button type="button" class="btn btn-danger"> View Report</button>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card shadow-0 border">
+                    <div class="card-body p-4" >
+
+                        <h4 class="mb-1 sfw-normal"
+                            th:text="|*{location.getName()}| + ','+|*{location.getCountry()}|"></h4>
+                        <div th:if="${value}=='Celsius'">
+                            <p class="mb-2">Current temperature: <strong
+                                    th:text="|*{current.getTemp_c()}|+' C'"></strong></p>
+                            <p>Feels like: <strong th:text="|*{current.getFeelslike_c()}|+' C'"></strong></p>
+                        </div>
+                        <div th:if="${value}=='Farenheit'">
+                            <p class="mb-2">Current temperature: <strong
+                                    th:text="|*{current.getTemp_f()}|+' F'"></strong></p>
+                            <p>Feels like: <strong th:text="|*{current.getFeelslike_f()}|+' F'"></strong></p>
+                        </div>
+                        <p>Humidity: <strong th:text="|*{current.getHumidity()}|+'%'"></strong>
+                            Cloud: <strong th:text="|*{current.getCloud()}|+'%'"></strong></p>
+
+                        <div class="d-flex flex-row align-items-center">
+                            <p class="mb-0 me-4" th:text="*{current.getCondition().getText()}"></p>
+                            <i class="fas fa-cloud fa-3x" style="color: #eee;"></i>
+                            <img th:src="*{current.getCondition().getIcon()}" alt="">
+                        </div>
+                        <div>
+                            <a href="#" id="latitude-link" >
+                                <button>Get weather in your location</button>
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Trình duyệt của bạn không hỗ trợ định vị GPS.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longtitude =position.coords.longitude;
+        var link = document.getElementById("latitude-link");
+        link.href = "http://localhost:8080/weather-forecast/current-location?q="
+            + latitude+","+longtitude;
+    }
+
+    getLocation();
+</script>
+
+</body>
+</html>
